@@ -1,0 +1,65 @@
+services:
+  ems-db:
+    image: mysql:8
+    container_name: ems-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ems
+      MYSQL_USER: emsuser
+      MYSQL_PASSWORD: emspass
+    volumes:
+      - ems-db-data:/var/lib/mysql
+    networks:
+      - ems-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ems-backend:
+    build: ./ems-java-backend-service
+    container_name: ems-backend
+    restart: always
+    environment:
+      DB_URL: jdbc:mysql://ems-db:3306/ems?useSSL=false&allowPublicKeyRetrieval=true
+      DB_USERNAME: emsuser
+      DB_PASSWORD: emspass
+    depends_on:
+      ems-db:
+        condition: service_healthy
+    expose:
+      - "8080"
+    networks:
+      - ems-network
+
+  ems-frontend:
+    build: ./ems-react-frontend-ui
+    container_name: ems-frontend
+    restart: always
+    expose:
+      - "3000"
+    depends_on:
+      - ems-backend
+    networks:
+      - ems-network
+
+  nginx:
+    build: ./nginx
+    container_name: ems-nginx
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - ems-frontend
+      - ems-backend
+    networks:
+      - ems-network
+
+networks:
+  ems-network:
+    driver: bridge
+
+volumes:
+  ems-db-data:

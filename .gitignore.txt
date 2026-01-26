@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+build/
+
+# Java
+target/
+*.class
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# SSL (for now)
+ssl/
