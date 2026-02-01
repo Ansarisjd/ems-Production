@@ -10,12 +10,17 @@ target/
 # Logs
 *.log
 
-# Environment files
+# Environment
 .env
+.env.*
 
 # OS
 .DS_Store
 Thumbs.db
 
-# SSL (for now)
+# IDE
+.vscode/
+.idea/
+
+# SSL (if any)
 ssl/
