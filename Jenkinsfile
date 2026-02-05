@@ -1,6 +1,15 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKERHUB_USERNAME = 'ansarisjdmohd3072@gmail.com'
+        DOCKERHUB_CREDS = credentials('dockerhub-creds')
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,10 +17,18 @@ pipeline {
             }
         }
 
+        stage('Docker Login') {
+            steps {
+                sh '''
+                  echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin
+                '''
+            }
+        }
+
         stage('Build Backend Image') {
             steps {
                 dir('ems-java-backend-service') {
-                    sh 'docker build -t ems-backend:latest .'
+                    sh 'docker build -t $DOCKERHUB_USERNAME/ems-backend:latest .'
                 }
             }
         }
@@ -19,16 +36,23 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 dir('ems-react-frontend-ui') {
-                    sh 'docker build -t ems-frontend:latest .'
+                    sh 'docker build -t $DOCKERHUB_USERNAME/ems-frontend:latest .'
                 }
             }
         }
 
-        stage('Build Nginx Image') {
+        stage('Push Images') {
             steps {
-                dir('Nginx') {
-                    sh 'docker build -t ems-nginx:latest .'
-                }
+                sh '''
+                  docker push $DOCKERHUB_USERNAME/ems-backend:latest
+                  docker push $DOCKERHUB_USERNAME/ems-frontend:latest
+                '''
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh 'docker system prune -af'
             }
         }
     }
