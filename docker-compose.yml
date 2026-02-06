@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   ems-db:
     image: mysql:8
@@ -19,7 +21,7 @@ services:
       retries: 10
 
   ems-backend:
-    build: ./ems-java-backend-service
+    image: ansarisjdmohd3072/ems-backend:latest
     container_name: ems-backend
     restart: always
     environment:
@@ -35,7 +37,7 @@ services:
       - ems-network
 
   ems-frontend:
-    build: ./ems-react-frontend-ui
+    image: ansarisjdmohd3072/ems-frontend:latest
     container_name: ems-frontend
     restart: always
     expose:
@@ -46,7 +48,7 @@ services:
       - ems-network
 
   nginx:
-    build: ./nginx
+    image: ansarisjdmohd3072/ems-nginx:latest
     container_name: ems-nginx
     restart: always
     ports:

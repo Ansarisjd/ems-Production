@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USERNAME = 'ansarisjd'   // Dockerhub Username
+        DOCKERHUB_USERNAME = 'ansarisjdmohd3072'
         DOCKERHUB_CREDS = credentials('dockerhub-creds')
     }
 
@@ -11,6 +11,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 echo 'Repository cloned successfully'
@@ -41,12 +42,31 @@ pipeline {
             }
         }
 
+        stage('Build Nginx Image') {
+            steps {
+                dir('nginx') {
+                    sh "docker build -t ${DOCKERHUB_USERNAME}/ems-nginx:latest ."
+                }
+            }
+        }
+
         stage('Push Images') {
             steps {
                 sh """
                   docker push ${DOCKERHUB_USERNAME}/ems-backend:latest
                   docker push ${DOCKERHUB_USERNAME}/ems-frontend:latest
+                  docker push ${DOCKERHUB_USERNAME}/ems-nginx:latest
                 """
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                sh '''
+                  docker compose down || true
+                  docker compose pull
+                  docker compose up -d
+                '''
             }
         }
 
