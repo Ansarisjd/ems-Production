@@ -21,7 +21,7 @@ services:
       retries: 10
 
   ems-backend:
-    image: ansarisjdmohd3072/ems-backend:latest
+    image: ansarisjd/ems-backend:latest
     container_name: ems-backend
     restart: always
     environment:
@@ -37,7 +37,7 @@ services:
       - ems-network
 
   ems-frontend:
-    image: ansarisjdmohd3072/ems-frontend:latest
+    image: ansarisjd/ems-frontend:latest
     container_name: ems-frontend
     restart: always
     expose:
@@ -48,7 +48,7 @@ services:
       - ems-network
 
   nginx:
-    image: ansarisjdmohd3072/ems-nginx:latest
+    image: ansarisjd/ems-nginx:latest
     container_name: ems-nginx
     restart: always
     ports:
