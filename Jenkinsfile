@@ -44,7 +44,7 @@ pipeline {
 
         stage('Build Nginx Image') {
             steps {
-                dir('nginx') {
+                dir('Nginx') {
                     sh "docker build -t ${DOCKERHUB_USERNAME}/ems-nginx:latest ."
                 }
             }
